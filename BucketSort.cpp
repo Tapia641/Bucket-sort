@@ -12,16 +12,22 @@
 
 using namespace std;
 #define MAX 3500
-#define IP A
+#define IP 1101
 #define PORT q12
 
 struct DATA
 {
+	//Datos que pide la practica
 	string ip;
 	int port;
 	vector<int> v;
+
 	void push(int n){
 		v.push_back(n);
+	}
+
+	int getTam(){
+		return v.size();
 	}
 };
 
@@ -83,7 +89,6 @@ int main(int argc, char const *argv[])
 		//Vector que lleva las cubetas
 		vector< vector<int> > TotalCubetas;
 		DivideCubetas(TotalCubetas, CUBETAS);
-		cout<<"TotalCubetas: "<<TotalCubetas.size()<<endl;
 
 		//Creamos un arreglo de hilos con tamanio de las cubetas
 		pthread_t *TotalHilos = (pthread_t *)malloc(CUBETAS *sizeof(pthread_t));
@@ -92,7 +97,7 @@ int main(int argc, char const *argv[])
 		for (int i = 0; i < CUBETAS; ++i)
 		{
 			//A cada hilo le mandamos cada una de las cubetas
-			pthread_create(&TotalHilos[i], NULL, Ordena(DivideCubetas[i]), NULL);
+			//pthread_create(&TotalHilos[i], NULL, OrdenaCubeta(),(void*)TotalCubetas[i], NULL);
 		}
 
 		//Esperamos a los hilos culminen
