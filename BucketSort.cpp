@@ -11,26 +11,33 @@
 #include <cmath> //Para ceil
 
 using namespace std;
-#define MAX 3500
-#define IP 1101
-#define PORT q12
+#define MAX 50
 
+//Creamos una estructura para poder enviarla por el thread :D
 struct DATA
 {
-	//Datos que pide la practica
-	string ip;
-	int port;
 	vector<int> v;
 
-	void push(int n){
-		v.push_back(n);
+	void setVector(vector<int> p){
+		v = p;
+	}
+
+	vector<int> getVector(){
+		return v;
+	}
+
+	void Imprime(){
+		for (int i = 0; i < v.size(); ++i)
+		{
+			cout<<v[i]<<endl;
+		}
 	}
 
 	int getTam(){
 		return v.size();
 	}
+	
 };
-
 
 //0-RangoMax
 void DivideCubetas(vector<vector<int> > &TotalCubetas, int &N){
@@ -50,7 +57,7 @@ void DivideCubetas(vector<vector<int> > &TotalCubetas, int &N){
 	}
 
 	//Establecemos los rangos de para cada cubeta
-	Division = floor(M/N);
+	Division = ceil(M/N);
 	vector<int> Rango;
 
 	//Establecemos el limite de cada rango
@@ -65,16 +72,30 @@ void DivideCubetas(vector<vector<int> > &TotalCubetas, int &N){
 	{
 		for (int j = 0; j < MAX; ++j)
 		{
-			if (v[j] > Rango[i] && v[j] <= Rango[i+1])
+			//Considerar el i+1 cuando llegue a i == N overflow
+			if (i == N)
 			{
-				cout<<v[j]<<endl;
-				CubetaSimple.push_back(v[i]);
+				if (v[j] > Rango[i])
+				{
+					CubetaSimple.push_back(v[j]);
+				}
+			}else if(v[j] > Rango[i] && v[j] <= Rango[i+1])
+			{
+//				cout<<v[j]<<endl;
+				CubetaSimple.push_back(v[j]);
 			}
 		}
-
 		TotalCubetas.push_back(CubetaSimple);
 		CubetaSimple.clear();
 	}
+}
+
+void *OrdenaCubeta(void *p){
+	struct DATA *aux = (struct DATA *) p;
+	vector<int> v = aux->getVector();
+	sort(v.begin(), v.end()); //Ocupa quicksort
+	aux->setVector(v);
+	p = aux;
 }
 
 
@@ -87,24 +108,36 @@ int main(int argc, char const *argv[])
 		CUBETAS = atoi(argv[1]);
 
 		//Vector que lleva las cubetas
-		vector< vector<int> > TotalCubetas;
+		vector<vector<int> > TotalCubetas;
 		DivideCubetas(TotalCubetas, CUBETAS);
 
 		//Creamos un arreglo de hilos con tamanio de las cubetas
 		pthread_t *TotalHilos = (pthread_t *)malloc(CUBETAS *sizeof(pthread_t));
 
+		//Creamos un arreglo de informacion del tamanio de las cubetas
+		struct DATA prueba[CUBETAS];
+
 		//Creamos los hilos
 		for (int i = 0; i < CUBETAS; ++i)
 		{
 			//A cada hilo le mandamos cada una de las cubetas
-			//pthread_create(&TotalHilos[i], NULL, OrdenaCubeta(),(void*)TotalCubetas[i], NULL);
+			prueba[i].setVector(TotalCubetas[i]);
+			pthread_create(&TotalHilos[i], NULL, OrdenaCubeta, &prueba[i]);
 		}
 
-		//Esperamos a los hilos culminen
+		//Esperamos a que los hilos culminen
 		for (int i = 0; i < CUBETAS; ++i)
 		{
 			pthread_join(TotalHilos[i], NULL);
 		}
+
+		//Imprimimos resultado
+		for (int i = 0; i < CUBETAS; ++i)
+		{
+			cout<<"Cubeta ["<<i+1<<"]: "<<endl;
+			prueba[i].Imprime();
+		}
+
 	}else{
 		cout<<"USO:\n"<<"./programa N\n";
 	}
