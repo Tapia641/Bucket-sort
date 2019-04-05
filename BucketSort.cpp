@@ -11,7 +11,7 @@
 #include <cmath> //Para ceil
 
 using namespace std;
-#define MAX 50
+#define MAX 3500
 
 //Creamos una estructura para poder enviarla por el thread :D
 struct DATA
@@ -57,7 +57,7 @@ void DivideCubetas(vector<vector<int> > &TotalCubetas, int &N){
 	}
 
 	//Establecemos los rangos de para cada cubeta
-	Division = ceil(M/N);
+	Division = floor(M/N);
 	vector<int> Rango;
 
 	//Establecemos el limite de cada rango
@@ -73,15 +73,15 @@ void DivideCubetas(vector<vector<int> > &TotalCubetas, int &N){
 		for (int j = 0; j < MAX; ++j)
 		{
 			//Considerar el i+1 cuando llegue a i == N overflow
-			if (i == N)
+			if (i == N-1)
 			{
-				if (v[j] > Rango[i])
+				if (v[j] >= Rango[i])
 				{
 					CubetaSimple.push_back(v[j]);
 				}
-			}else if(v[j] > Rango[i] && v[j] <= Rango[i+1])
+			}else if(v[j] > Rango[i] && v[j] < Rango[i+1])
 			{
-//				cout<<v[j]<<endl;
+				//cout<<v[j]<<endl;
 				CubetaSimple.push_back(v[j]);
 			}
 		}
@@ -93,7 +93,7 @@ void DivideCubetas(vector<vector<int> > &TotalCubetas, int &N){
 void *OrdenaCubeta(void *p){
 	struct DATA *aux = (struct DATA *) p;
 	vector<int> v = aux->getVector();
-	sort(v.begin(), v.end()); //Ocupa quicksort
+	sort(v.begin(), v.end()); //O(nlogn)
 	aux->setVector(v);
 	p = aux;
 }
