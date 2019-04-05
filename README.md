@@ -1,8 +1,18 @@
 # Bucket-Sort
 Ordenamiento de números mediante el uso de hilos en C
 
-Modo de compilacion
+
+
+### Requerimientos
+
+Compilar en una terminal de _Linux_
+
+Modo de compilación
 ```
 $ g++ BucketSort.cpp -o BucketSort -pthread
 
 ```
+
+
+**Autor**
+* **Luis Enrique Hernández Tapia** - *Autor* - [Tapia641](https://github.com/Tapia641)
