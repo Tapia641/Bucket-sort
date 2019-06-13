@@ -1,3 +1,5 @@
+/* AUTOR: HERNANDEZ TAPIA LUIS ENRIQUE */
+
 /*LIBRERIAS OBSOLETAS DE C*/
 #include <pthread.h>//Para el manejo de hilos
 
